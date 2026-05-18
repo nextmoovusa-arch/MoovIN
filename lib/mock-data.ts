@@ -178,11 +178,15 @@ export const repartitionCharges = [
 export const heatmapPaiements = biens.map((b) => ({
   bien: `${b.type} ${b.ville}`,
   mois: Array.from({ length: 12 }, (_, m) => {
+    const label = new Date(2026, m, 1).toLocaleDateString("fr-FR", { month: "short" });
+    // Si le bien n'a pas de locataire (Vacant ou Travaux), pas de loyer dû
+    if (b.etat !== "Occupé") {
+      return { label, statut: "vacant" as const };
+    }
     const r = Math.random();
-    return {
-      label: new Date(2026, m, 1).toLocaleDateString("fr-FR", { month: "short" }),
-      statut: r > 0.9 ? "impaye" : r > 0.78 ? "retard" : ("paye" as "paye" | "retard" | "impaye"),
-    };
+    const statut: "paye" | "retard" | "impaye" =
+      r > 0.9 ? "impaye" : r > 0.78 ? "retard" : "paye";
+    return { label, statut };
   }),
 }));
 

@@ -263,12 +263,13 @@ export default function DashboardPage() {
                     <li><span className="text-success">●</span> Vert : payé à temps</li>
                     <li><span className="text-warning">●</span> Orange : payé en retard</li>
                     <li><span className="text-destructive">●</span> Rouge : impayé</li>
+                    <li><span className="text-muted-foreground">●</span> Gris : pas de locataire (Vacant / Travaux)</li>
                   </ul>
-                  <p className="mt-1">Détecter d'un coup d'œil les locataires à risque (lignes majoritairement orange/rouge).</p>
+                  <p className="mt-1">Détecter d'un coup d'œil les locataires à risque (lignes orange/rouge) ou les biens improductifs (lignes grises).</p>
                 </>
               }
             />
-            <CardDescription>12 mois × biens — vert = payé, orange = retard, rouge = impayé</CardDescription>
+            <CardDescription>12 mois × biens — vert = payé, orange = retard, rouge = impayé, gris = sans locataire</CardDescription>
           </CardHeader>
           <CardContent>
             <PaymentHeatmap rows={heatmapPaiements} />

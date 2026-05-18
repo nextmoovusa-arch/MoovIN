@@ -301,17 +301,32 @@ export function RadialGauge({
 
 /* ---------- Heatmap calendaire des paiements ---------- */
 
+export type PaymentStatut = "paye" | "retard" | "impaye" | "vacant";
+
+const STATUT_LABELS: Record<PaymentStatut, string> = {
+  paye: "Payé à temps",
+  retard: "Retard",
+  impaye: "Impayé",
+  vacant: "Sans locataire",
+};
+
 export function PaymentHeatmap({
   rows,
 }: {
-  rows: { bien: string; mois: { label: string; statut: "paye" | "retard" | "impaye" }[] }[];
+  rows: { bien: string; mois: { label: string; statut: PaymentStatut }[] }[];
 }) {
-  const colorOf = (s: string) =>
-    s === "paye"
-      ? "hsl(var(--success))"
-      : s === "retard"
-        ? "hsl(var(--warning))"
-        : "hsl(var(--destructive))";
+  const colorOf = (s: PaymentStatut) => {
+    switch (s) {
+      case "paye":
+        return "hsl(var(--success))";
+      case "retard":
+        return "hsl(var(--warning))";
+      case "impaye":
+        return "hsl(var(--destructive))";
+      case "vacant":
+        return "hsl(var(--muted-foreground) / 0.35)";
+    }
+  };
 
   return (
     <div className="overflow-x-auto animate-fade-in">
@@ -333,7 +348,7 @@ export function PaymentHeatmap({
               {row.mois.map((m, i) => (
                 <td key={i} className="p-1">
                   <div
-                    title={`${row.bien} • ${m.label} • ${m.statut}`}
+                    title={`${row.bien} • ${m.label} • ${STATUT_LABELS[m.statut]}`}
                     className="h-6 w-6 rounded-sm transition-transform hover:scale-110"
                     style={{ backgroundColor: colorOf(m.statut) }}
                   />
@@ -343,7 +358,7 @@ export function PaymentHeatmap({
           ))}
         </tbody>
       </table>
-      <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
+      <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-sm bg-success" /> Payé à temps
         </span>
@@ -352,6 +367,13 @@ export function PaymentHeatmap({
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-sm bg-destructive" /> Impayé
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className="h-3 w-3 rounded-sm"
+            style={{ backgroundColor: "hsl(var(--muted-foreground) / 0.35)" }}
+          />{" "}
+          Sans locataire
         </span>
       </div>
     </div>

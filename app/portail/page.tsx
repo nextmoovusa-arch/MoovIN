@@ -34,6 +34,8 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useBiens, useLocataires } from "@/lib/store";
 import { useLocalStorage } from "@/lib/storage";
 import { formatEUR } from "@/lib/utils";
+import { downloadPdf, downloadQuittancePDF } from "@/lib/pdf";
+import { generateLeaseArticles } from "@/lib/lease-template";
 
 type Signalement = {
   id: string;
@@ -261,11 +263,57 @@ function PaiementTab({ locataireId, loyerMensuel }: { locataireId: string; loyer
 /* ----------------- Bail ----------------- */
 
 function BailTab({ locataire, bien }: { locataire: any; bien: any }) {
+  function downloadBailPdf() {
+    // Récupération du bail personnalisé enregistré par le bailleur s'il existe
+    let storedRaw: string | null = null;
+    try {
+      storedRaw = localStorage.getItem(`moovin.bail.${locataire.id}`);
+    } catch {}
+    const stored = storedRaw ? JSON.parse(storedRaw) : null;
+
+    const articles = stored?.articles
+      ? stored.articles
+      : generateLeaseArticles("vide-non-meuble", {
+          bailleurNom: stored?.bailleurNom ?? "",
+          bailleurAdresse: stored?.bailleurAdresse ?? "",
+          bailleurEmail: stored?.bailleurEmail ?? "",
+          locataireNom: locataire.nom,
+          locataireEmail: locataire.email,
+          locataireTelephone: locataire.telephone,
+          bienAdresse: `${bien.adresse}, ${bien.ville}`,
+          bienType: bien.type,
+          bienSurface: bien.surface,
+          bienNbPieces: bien.nbPieces,
+          loyerMensuel: locataire.loyerMensuel,
+          charges: bien.charges,
+          depotGarantie: locataire.depotGarantie,
+          dateDebut: locataire.dateEntree,
+          dureeAnnees: locataire.dureeBailAnnees,
+        });
+
+    downloadPdf({
+      filename: `Bail-${locataire.nom.replace(/\s+/g, "_")}.pdf`,
+      footerLabel: "MoovIN · Contrat de bail",
+      blocks: [
+        { kind: "title", text: "CONTRAT DE BAIL D'HABITATION" },
+        { kind: "subtitle", text: "Exemplaire locataire" },
+        { kind: "spacer", height: 16 },
+        ...articles.map((a: any) => ({
+          kind: "article" as const,
+          numero: a.numero,
+          titre: a.titre,
+          texte: a.texte,
+        })),
+        { kind: "signatures", bailleur: stored?.bailleurNom ?? "", locataire: locataire.nom },
+      ],
+    });
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Mon bail</CardTitle>
-        <CardDescription>Consultation et téléchargement</CardDescription>
+        <CardDescription>Consultation et téléchargement PDF</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3 text-sm">
@@ -276,7 +324,7 @@ function BailTab({ locataire, bien }: { locataire: any; bien: any }) {
           <Info label="Loyer mensuel" value={formatEUR(locataire.loyerMensuel)} />
           <Info label="Dépôt de garantie" value={formatEUR(locataire.depotGarantie)} />
         </div>
-        <Button>
+        <Button onClick={downloadBailPdf}>
           <Download className="h-4 w-4" /> Télécharger le bail (PDF)
         </Button>
       </CardContent>
@@ -306,14 +354,22 @@ function QuittancesTab({ locataire, bien }: { locataire: any; bien: any }) {
   });
 
   function downloadQ(mois: string) {
-    const txt = `QUITTANCE DE LOYER\nMois : ${mois}\nBien : ${bien.adresse}, ${bien.ville}\nLocataire : ${locataire.nom}\nLoyer : ${locataire.loyerMensuel} €\nMerci de votre paiement.`;
-    const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Quittance-${mois.replace(/\s+/g, "_")}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // On récupère le bailleur depuis le bail enregistré s'il existe
+    let storedRaw: string | null = null;
+    try {
+      storedRaw = localStorage.getItem(`moovin.bail.${locataire.id}`);
+    } catch {}
+    const stored = storedRaw ? JSON.parse(storedRaw) : null;
+
+    downloadQuittancePDF({
+      mois,
+      bailleurNom: stored?.bailleurNom ?? "",
+      bailleurAdresse: stored?.bailleurAdresse ?? "",
+      locataireNom: locataire.nom,
+      bienAdresse: `${bien.adresse}, ${bien.ville}`,
+      loyer: locataire.loyerMensuel,
+      charges: bien.charges,
+    });
   }
 
   return (

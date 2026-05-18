@@ -1,9 +1,13 @@
+"use client";
+
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GroupedBarChart, LineAreaChart } from "@/components/charts/chart-kit";
 import { CardTitleInfo } from "@/components/ui/card-title-info";
 import { Button } from "@/components/ui/button";
 import { Download, Send } from "lucide-react";
+import { downloadQuittancePDF } from "@/lib/pdf";
+import { biens, locataires } from "@/lib/mock-data";
 
 const statutsEnvoi = Array.from({ length: 12 }, (_, i) => {
   const d = new Date();
@@ -35,8 +39,29 @@ export default function QuittancesPage() {
         badge="Module 5"
         actions={
           <>
-            <Button variant="outline">
-              <Download className="h-4 w-4" /> Lot mensuel (ZIP)
+            <Button
+              variant="outline"
+              onClick={() => {
+                const moisCourant = new Date().toLocaleDateString("fr-FR", {
+                  month: "long",
+                  year: "numeric",
+                });
+                locataires.forEach((l) => {
+                  const b = biens.find((x) => x.id === l.bienId);
+                  if (!b) return;
+                  downloadQuittancePDF({
+                    mois: moisCourant,
+                    bailleurNom: "",
+                    bailleurAdresse: "",
+                    locataireNom: l.nom,
+                    bienAdresse: `${b.adresse}, ${b.ville}`,
+                    loyer: b.loyerMensuel,
+                    charges: b.charges,
+                  });
+                });
+              }}
+            >
+              <Download className="h-4 w-4" /> Générer toutes les quittances (PDF)
             </Button>
             <Button>
               <Send className="h-4 w-4" /> Envoyer les quittances

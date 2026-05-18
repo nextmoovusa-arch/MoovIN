@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadialGauge, GroupedBarChart } from "@/components/charts/chart-kit";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 import { dpePatrimoine, alertesConformite } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Calendar } from "lucide-react";
@@ -16,7 +17,16 @@ export default function ConformitePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Score de conformité global</CardTitle>
+          <CardTitleInfo
+            title="Score de conformité global"
+            hint={
+              <>
+                <p><strong>Score global</strong> = moyenne pondérée des 5 sous-scores.</p>
+                <p className="mt-1">Catégories : DPE, Assurance, Bail, Diagnostics, Fiscal. Chacune sur 100.</p>
+                <p className="mt-1">&lt; 60 = critique, 60-80 = à surveiller, &gt; 80 = en règle.</p>
+              </>
+            }
+          />
           <CardDescription>Score général + sous-scores par catégorie</CardDescription>
         </CardHeader>
         <CardContent>
@@ -34,7 +44,20 @@ export default function ConformitePage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Répartition DPE du patrimoine</CardTitle>
+            <CardTitleInfo
+              title="Répartition DPE du patrimoine"
+              hint={
+                <>
+                  <p>Nombre de biens par classe énergétique (A → G).</p>
+                  <p className="mt-1"><strong>Calendrier légal d'interdiction :</strong></p>
+                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                    <li>2025 : classe G interdite à la location</li>
+                    <li>2028 : classe F interdite</li>
+                    <li>2034 : classe E interdite</li>
+                  </ul>
+                </>
+              }
+            />
             <CardDescription>Seuil légal : G interdit 2025, F 2028</CardDescription>
           </CardHeader>
           <CardContent>
@@ -48,7 +71,10 @@ export default function ConformitePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Échéances à venir</CardTitle>
+            <CardTitleInfo
+              title="Échéances à venir"
+              hint="Timeline chronologique des échéances réglementaires. Rouge = retard, orange = &lt; 7j, bleu = à venir."
+            />
             <CardDescription>Timeline chronologique</CardDescription>
           </CardHeader>
           <CardContent>

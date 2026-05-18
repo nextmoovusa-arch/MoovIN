@@ -9,6 +9,7 @@ import {
   StackedAreaChart,
 } from "@/components/charts/chart-kit";
 import { cashFlowMensuel, repartitionPatrimoine, repartitionCharges, heatmapPaiements } from "@/lib/mock-data";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 
 const cumulCash = cashFlowMensuel.map((m, i) => ({
   ...m,
@@ -46,7 +47,7 @@ export default function AnalyticsPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Patrimoine</CardTitle>
+            <CardTitleInfo title="Patrimoine" hint="Donut : poids de chaque bien dans la valeur totale du portefeuille." />
             <CardDescription>Répartition par bien</CardDescription>
           </CardHeader>
           <CardContent>
@@ -56,7 +57,7 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Charges</CardTitle>
+            <CardTitleInfo title="Charges" hint="Donut : décomposition de toutes les charges annuelles cumulées sur le portefeuille." />
             <CardDescription>Décomposition annuelle</CardDescription>
           </CardHeader>
           <CardContent>
@@ -66,7 +67,10 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Indicateurs santé</CardTitle>
+            <CardTitleInfo
+              title="Indicateurs santé"
+              hint="Radar 5 axes (rendement, occupation, recouvrement, conformité, diversification). Plus la surface est grande, plus le portefeuille est sain."
+            />
             <CardDescription>Radar synthétique</CardDescription>
           </CardHeader>
           <CardContent>
@@ -77,7 +81,10 @@ export default function AnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Cash-flow cumulé</CardTitle>
+          <CardTitleInfo
+            title="Cash-flow cumulé"
+            hint="Somme cumulative des cash-flows mensuels depuis 24 mois. La courbe monte = vous accumulez du cash net ; elle descend = vous puisez dans vos économies."
+          />
           <CardDescription>Évolution depuis 24 mois</CardDescription>
         </CardHeader>
         <CardContent>
@@ -88,7 +95,10 @@ export default function AnalyticsPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Ventilation mensuelle</CardTitle>
+            <CardTitleInfo
+              title="Ventilation mensuelle"
+              hint="Pour chaque mois : revenus (positifs), charges et mensualité de prêt (négatives). La barre nette = cash-flow réel du mois."
+            />
             <CardDescription>Revenus, charges, remboursement prêt</CardDescription>
           </CardHeader>
           <CardContent>
@@ -106,7 +116,15 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Heatmap paiements</CardTitle>
+            <CardTitleInfo
+              title="Heatmap paiements"
+              hint={
+                <>
+                  <p>Vue annuelle agrégée (12 mois × biens).</p>
+                  <p className="mt-1">Vert = payé à temps, orange = retard, rouge = impayé.</p>
+                </>
+              }
+            />
             <CardDescription>Vue agrégée annuelle</CardDescription>
           </CardHeader>
           <CardContent>

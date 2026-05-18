@@ -66,7 +66,7 @@ export default function Landing() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/simulateurs/investissement">
+              <Link href="/simulateurs/rentabilite">
                 <Eye className="h-4 w-4" /> Tester « Est-ce rentable ? »
               </Link>
             </Button>

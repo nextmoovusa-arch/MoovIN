@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Building2,
-  Calculator,
   Euro,
   FileText,
   Folder,
@@ -17,6 +16,7 @@ import {
   Receipt,
   Search,
   Sparkles,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,12 +27,12 @@ const navItems = [
   { href: "/loyers", label: "Suivi loyers", icon: Euro },
   { href: "/quittances", label: "Quittances", icon: Receipt },
   { href: "/documents", label: "Documents", icon: Folder },
-  { href: "/simulateurs/rentabilite", label: "Simulateur rentabilité", icon: Calculator },
+  { href: "/simulateurs/rentabilite", label: "Rentabilité — Est-ce rentable ?", icon: Sparkles },
   { href: "/simulateurs/pret", label: "Simulateur prêt", icon: LineChart },
-  { href: "/simulateurs/investissement", label: "Est-ce rentable ?", icon: Sparkles },
   { href: "/fiscalite", label: "Fiscalité", icon: FileText },
   { href: "/conformite", label: "Conformité", icon: Shield },
   { href: "/analytics", label: "Analytics", icon: PieChart },
+  { href: "/portail", label: "Portail locataire", icon: User },
   { href: "/parametres", label: "Paramètres", icon: Settings },
 ];
 

@@ -6,6 +6,7 @@ import {
   HorizontalBarChart,
   GroupedBarChart,
 } from "@/components/charts/chart-kit";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 import {
   loyersPrevuVsEncaisse,
   repartitionStatutsPaiement,
@@ -36,7 +37,16 @@ export default function LoyersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Taux de recouvrement (24 mois)</CardTitle>
+          <CardTitleInfo
+            title="Taux de recouvrement (24 mois)"
+            hint={
+              <>
+                <p><strong>Formule :</strong> (loyers encaissés / loyers dus) × 100.</p>
+                <p className="mt-1"><strong>Type :</strong> graphique en aire avec ligne de référence à 95%.</p>
+                <p className="mt-1">Un taux durablement &lt; 95 % révèle un problème structurel (locataires fragiles, retards récurrents).</p>
+              </>
+            }
+          />
           <CardDescription>Cible 95% — alerte en dessous</CardDescription>
         </CardHeader>
         <CardContent>
@@ -47,7 +57,15 @@ export default function LoyersPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Statuts de paiement</CardTitle>
+            <CardTitleInfo
+              title="Statuts de paiement"
+              hint={
+                <>
+                  <p><strong>Type :</strong> donut avec total au centre.</p>
+                  <p className="mt-1">Catégories : payé à temps / payé en retard / en attente / impayé &gt; 30j.</p>
+                </>
+              }
+            />
             <CardDescription>Mois en cours</CardDescription>
           </CardHeader>
           <CardContent>
@@ -57,7 +75,15 @@ export default function LoyersPage() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Top 5 locataires à risque</CardTitle>
+            <CardTitleInfo
+              title="Top 5 locataires à risque"
+              hint={
+                <>
+                  <p><strong>Score de risque</strong> = (nombre de retards × jours moyens × montant impayé) normalisé sur 100.</p>
+                  <p className="mt-1">Clic ligne = fiche locataire + actions (relance email/SMS, mise en demeure, escalade).</p>
+                </>
+              }
+            />
             <CardDescription>Score = retards × jours × montant</CardDescription>
           </CardHeader>
           <CardContent>
@@ -68,7 +94,15 @@ export default function LoyersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Loyers prévus vs encaissés</CardTitle>
+          <CardTitleInfo
+            title="Loyers prévus vs encaissés"
+            hint={
+              <>
+                <p><strong>Type :</strong> barres groupées (2 par mois).</p>
+                <p className="mt-1">Différence entre barre prévue et barre encaissée = montant non perçu sur le mois.</p>
+              </>
+            }
+          />
           <CardDescription>12 derniers mois — écart = montant impayé</CardDescription>
         </CardHeader>
         <CardContent>

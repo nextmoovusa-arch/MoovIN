@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GroupedBarChart, LineAreaChart, DonutChart } from "@/components/charts/chart-kit";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 
 const comparateurRegimes = [
   { regime: "Micro-foncier", impot: 3600, netApresImpot: 8400 },
@@ -33,7 +34,20 @@ export default function FiscalitePage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Comparateur de régimes</CardTitle>
+            <CardTitleInfo
+              title="Comparateur de régimes"
+              hint={
+                <>
+                  <p><strong>3 régimes simulés :</strong></p>
+                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                    <li><strong>Micro-foncier</strong> : abattement 30 %, simple. Plafond 15 000 €/an.</li>
+                    <li><strong>Réel</strong> : déduction des charges réelles + amortissements. Optimal au-delà de 30 % de charges.</li>
+                    <li><strong>LMNP</strong> : location meublée, amortissements élevés.</li>
+                  </ul>
+                  <p className="mt-1">Le plus avantageux est mis en évidence.</p>
+                </>
+              }
+            />
             <CardDescription>Impôt et revenu net après impôt</CardDescription>
           </CardHeader>
           <CardContent>
@@ -50,7 +64,21 @@ export default function FiscalitePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Charges déductibles</CardTitle>
+            <CardTitleInfo
+              title="Charges déductibles"
+              hint={
+                <>
+                  <p>Au régime réel, ces postes viennent en déduction des loyers imposables :</p>
+                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                    <li>Intérêts d'emprunt (mais pas le capital)</li>
+                    <li>Taxe foncière</li>
+                    <li>Assurance PNO</li>
+                    <li>Travaux d'entretien (pas d'agrandissement)</li>
+                    <li>Frais de gestion</li>
+                  </ul>
+                </>
+              }
+            />
             <CardDescription>Régime réel</CardDescription>
           </CardHeader>
           <CardContent>
@@ -61,7 +89,10 @@ export default function FiscalitePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Projection impôt sur 10 ans</CardTitle>
+          <CardTitleInfo
+            title="Projection impôt sur 10 ans"
+            hint="Estimation prospective : loyers +2 %/an, charges stables. Permet d'anticiper la trajectoire fiscale et de planifier les arbitrages (changement de régime, travaux déductibles)."
+          />
           <CardDescription>Hypothèse inflation loyers 2 % / an</CardDescription>
         </CardHeader>
         <CardContent>

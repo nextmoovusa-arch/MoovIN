@@ -8,6 +8,8 @@ import {
   StackedAreaChart,
   SimpleLineChart,
 } from "@/components/charts/chart-kit";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
+import { InfoHint } from "@/components/ui/info-hint";
 import { mensualitePret, tableauAmortissement } from "@/lib/calculs";
 import { formatEUR } from "@/lib/utils";
 
@@ -98,19 +100,34 @@ export default function PretPage() {
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Mensualité (hors assurance)</p>
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-xs text-muted-foreground">Mensualité (hors assurance)</p>
+                <InfoHint title="Mensualité">
+                  <p><strong>Formule :</strong> M = C × i / (1 − (1+i)^−n)</p>
+                  <p className="mt-1">C = capital, i = taux mensuel, n = nb mois.</p>
+                </InfoHint>
+              </div>
               <p className="text-xl font-bold text-primary">{formatEUR(mens)}</p>
             </div>
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Mensualité totale</p>
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-xs text-muted-foreground">Mensualité totale</p>
+                <InfoHint title="Mensualité totale">Mensualité + prime d'assurance emprunteur.</InfoHint>
+              </div>
               <p className="text-xl font-bold">{formatEUR(mens + assurance)}</p>
             </div>
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Total intérêts</p>
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-xs text-muted-foreground">Total intérêts</p>
+                <InfoHint title="Total intérêts">Somme de toutes les parts « intérêts » sur la durée totale.</InfoHint>
+              </div>
               <p className="text-xl font-bold text-warning">{formatEUR(interetsTotal)}</p>
             </div>
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Coût total crédit</p>
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-xs text-muted-foreground">Coût total crédit</p>
+                <InfoHint title="Coût total">Capital + intérêts + assurance sur toute la durée. À comparer à un achat cash.</InfoHint>
+              </div>
               <p className="text-xl font-bold text-destructive">{formatEUR(coutTotal)}</p>
             </div>
           </CardContent>
@@ -120,7 +137,15 @@ export default function PretPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Décomposition coût total</CardTitle>
+            <CardTitleInfo
+              title="Décomposition coût total"
+              hint={
+                <>
+                  <p><strong>Type :</strong> donut.</p>
+                  <p className="mt-1">Capital (ce que vous remboursez), intérêts (rémunération banque), assurance (couverture décès/invalidité).</p>
+                </>
+              }
+            />
           </CardHeader>
           <CardContent>
             <DonutChart data={decomp} />
@@ -129,7 +154,15 @@ export default function PretPage() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Pyramide capital / intérêts</CardTitle>
+            <CardTitleInfo
+              title="Pyramide capital / intérêts"
+              hint={
+                <>
+                  <p><strong>Type :</strong> aire empilée cumulée.</p>
+                  <p className="mt-1">Au début, vous remboursez surtout des intérêts. Vers la fin, surtout du capital. C'est mécanique : intérêts = taux × capital restant dû.</p>
+                </>
+              }
+            />
             <CardDescription>Aire empilée cumulée</CardDescription>
           </CardHeader>
           <CardContent>
@@ -148,7 +181,10 @@ export default function PretPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Capital restant dû dans le temps</CardTitle>
+          <CardTitleInfo
+            title="Capital restant dû dans le temps"
+            hint="Courbe de ce que vous devez encore à la banque, mois après mois. Utile pour calculer une revente ou un remboursement anticipé."
+          />
           <CardDescription>Décroissance progressive jusqu'à zéro</CardDescription>
         </CardHeader>
         <CardContent>
@@ -158,7 +194,19 @@ export default function PretPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tableau d'amortissement</CardTitle>
+          <CardTitleInfo
+            title="Tableau d'amortissement"
+            hint={
+              <>
+                <p>Détail mois par mois :</p>
+                <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                  <li><strong>Part intérêts</strong> = CRD × taux mensuel</li>
+                  <li><strong>Part capital</strong> = mensualité − intérêts</li>
+                  <li><strong>CRD</strong> = capital restant à rembourser</li>
+                </ul>
+              </>
+            }
+          />
           <CardDescription>24 premiers mois (scrollable)</CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">

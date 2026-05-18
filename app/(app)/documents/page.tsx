@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadialGauge, GroupedBarChart } from "@/components/charts/chart-kit";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 import { biens } from "@/lib/mock-data";
 import { File, FileText, FileImage } from "lucide-react";
 
@@ -25,7 +26,15 @@ export default function DocumentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Score de conformité documentaire par bien</CardTitle>
+          <CardTitleInfo
+            title="Score de conformité documentaire par bien"
+            hint={
+              <>
+                <p><strong>Formule :</strong> documents présents / documents obligatoires × 100.</p>
+                <p className="mt-1">Documents obligatoires : DPE, bail, états des lieux, assurance PNO, diagnostics, acte d'achat.</p>
+              </>
+            }
+          />
           <CardDescription>% de documents obligatoires présents</CardDescription>
         </CardHeader>
         <CardContent>
@@ -46,7 +55,10 @@ export default function DocumentsPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Activité documentaire mensuelle</CardTitle>
+            <CardTitleInfo
+              title="Activité documentaire mensuelle"
+              hint="Uploads = ajouts de fichiers ; consultations = vues du document par vous, votre expert-comptable ou un locataire."
+            />
             <CardDescription>Uploads vs consultations</CardDescription>
           </CardHeader>
           <CardContent>

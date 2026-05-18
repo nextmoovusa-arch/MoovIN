@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 import {
   LineAreaChart,
   DonutChart,
@@ -61,6 +62,14 @@ export default function DashboardPage() {
           trend="up"
           sparkData={sparkA}
           color="primary"
+          info={{
+            content: (
+              <>
+                <p><strong>Formule :</strong> Σ (prix d'achat + travaux + revalorisation) de tous les biens.</p>
+                <p className="mt-1">La mini-courbe montre l'évolution sur 12 mois. MAJ manuelle ou via API d'estimation.</p>
+              </>
+            ),
+          }}
         />
         <StatCard
           label="Loyers du mois"
@@ -69,6 +78,14 @@ export default function DashboardPage() {
           trend="up"
           sparkData={sparkB}
           color="success"
+          info={{
+            content: (
+              <>
+                <p><strong>Formule :</strong> Σ des loyers réellement encaissés ce mois sur l'ensemble des baux actifs.</p>
+                <p className="mt-1">MAJ en temps réel à la réception des paiements.</p>
+              </>
+            ),
+          }}
         />
         <StatCard
           label="Cash-flow mensuel"
@@ -77,6 +94,14 @@ export default function DashboardPage() {
           trend={cashFlowDernier >= 0 ? "up" : "down"}
           sparkData={sparkC}
           color={cashFlowDernier >= 0 ? "success" : "destructive"}
+          info={{
+            content: (
+              <>
+                <p><strong>Formule :</strong> Loyers − charges − impôts − remboursement prêt.</p>
+                <p className="mt-1">Vert si positif, rouge si négatif. Le sparkline visualise les 12 derniers mois.</p>
+              </>
+            ),
+          }}
         />
         <StatCard
           label="Rendement net moyen"
@@ -85,6 +110,14 @@ export default function DashboardPage() {
           trend="up"
           sparkData={sparkD}
           color="warning"
+          info={{
+            content: (
+              <>
+                <p><strong>Formule :</strong> (Loyers annuels − charges) / Investissement total.</p>
+                <p className="mt-1">Moyenne pondérée sur tous les biens. Seuils : &lt; 2 % rouge, 2–4 % orange, &gt; 4 % vert.</p>
+              </>
+            ),
+          }}
         />
       </section>
 
@@ -93,7 +126,16 @@ export default function DashboardPage() {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle>Évolution du cash-flow</CardTitle>
+              <CardTitleInfo
+                title="Évolution du cash-flow"
+                hint={
+                  <>
+                    <p><strong>Type :</strong> graphique en aire avec ligne de référence à 0.</p>
+                    <p className="mt-1"><strong>Lecture :</strong> chaque point = cash-flow net du mois (loyers − charges − prêt). Les valeurs négatives signalent des mois déficitaires.</p>
+                    <p className="mt-1"><strong>Interactions :</strong> survol = détail mensuel ; sélecteur de période 12/24/36 mois ; double-clic = export PNG.</p>
+                  </>
+                }
+              />
               <CardDescription>Cash-flow mensuel net sur 24 mois, ligne de référence à zéro</CardDescription>
             </div>
             <div className="hidden md:flex gap-1">
@@ -112,7 +154,16 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>Répartition du patrimoine</CardTitle>
+            <CardTitleInfo
+              title="Répartition du patrimoine"
+              hint={
+                <>
+                  <p><strong>Type :</strong> donut chart. Chaque segment = un bien.</p>
+                  <p className="mt-1"><strong>Lecture :</strong> taille du segment proportionnelle au prix d'achat. Permet de détecter une concentration excessive sur un seul actif.</p>
+                  <p className="mt-1"><strong>Interactions :</strong> survol = tooltip ; clic légende = masquer/afficher.</p>
+                </>
+              }
+            />
             <CardDescription>Valeur de chaque bien dans le total</CardDescription>
           </CardHeader>
           <CardContent>
@@ -122,7 +173,16 @@ export default function DashboardPage() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Loyers prévus vs encaissés</CardTitle>
+            <CardTitleInfo
+              title="Loyers prévus vs encaissés"
+              hint={
+                <>
+                  <p><strong>Type :</strong> barres groupées (2 par mois).</p>
+                  <p className="mt-1"><strong>Lecture :</strong> barre grise = loyer attendu, barre colorée = encaissé. L'écart entre les deux = impayés ou paiements en retard.</p>
+                  <p className="mt-1"><strong>Interactions :</strong> clic sur un mois = liste des paiements détaillés ; filtrable par bien.</p>
+                </>
+              }
+            />
             <CardDescription>Comparaison sur 12 derniers mois — écart = impayés ou décalages</CardDescription>
           </CardHeader>
           <CardContent>
@@ -142,7 +202,16 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Décomposition des charges annuelles</CardTitle>
+            <CardTitleInfo
+              title="Décomposition des charges annuelles"
+              hint={
+                <>
+                  <p><strong>Type :</strong> donut. Postes : taxe foncière, assurance PNO, copropriété, maintenance, gestion, intérêts prêt.</p>
+                  <p className="mt-1"><strong>Lecture :</strong> identifier la charge la plus lourde et arbitrer (renégocier syndic, changer d'assurance...).</p>
+                  <p className="mt-1"><strong>Interactions :</strong> survol = montant + % ; bascule donut/barres ; export CSV.</p>
+                </>
+              }
+            />
             <CardDescription>Taxe foncière, assurance, copropriété, intérêts prêt…</CardDescription>
           </CardHeader>
           <CardContent>
@@ -152,7 +221,21 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Jauges de performance</CardTitle>
+            <CardTitleInfo
+              title="Jauges de performance"
+              hint={
+                <>
+                  <p><strong>Type :</strong> 4 jauges radiales avec seuils colorés (rouge / orange / vert).</p>
+                  <p className="mt-1"><strong>Calculs :</strong></p>
+                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                    <li><strong>Brut</strong> = loyers annuels / prix d'achat</li>
+                    <li><strong>Net</strong> = (loyers − charges) / investissement total</li>
+                    <li><strong>Occupation</strong> = jours occupés / 365</li>
+                    <li><strong>Recouvrement</strong> = loyers encaissés / loyers dus</li>
+                  </ul>
+                </>
+              }
+            />
             <CardDescription>Rendement, occupation et recouvrement</CardDescription>
           </CardHeader>
           <CardContent>
@@ -170,7 +253,21 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Carte de chaleur des paiements</CardTitle>
+            <CardTitleInfo
+              title="Carte de chaleur des paiements"
+              hint={
+                <>
+                  <p><strong>Type :</strong> heatmap style GitHub-contribution — 12 mois × biens.</p>
+                  <p className="mt-1"><strong>Code couleur :</strong></p>
+                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                    <li><span className="text-success">●</span> Vert : payé à temps</li>
+                    <li><span className="text-warning">●</span> Orange : payé en retard</li>
+                    <li><span className="text-destructive">●</span> Rouge : impayé</li>
+                  </ul>
+                  <p className="mt-1">Détecter d'un coup d'œil les locataires à risque (lignes majoritairement orange/rouge).</p>
+                </>
+              }
+            />
             <CardDescription>12 mois × biens — vert = payé, orange = retard, rouge = impayé</CardDescription>
           </CardHeader>
           <CardContent>
@@ -180,8 +277,22 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Alertes de conformité</CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitleInfo
+                title="Alertes de conformité"
+                hint={
+                  <>
+                    <p>Détection automatique des échéances :</p>
+                    <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                      <li><strong>DPE</strong> : alerte 60j avant expiration</li>
+                      <li><strong>Assurance PNO</strong> : 30j avant renouvellement</li>
+                      <li><strong>Bail</strong> : 90j avant fin</li>
+                      <li><strong>Révision loyer</strong> : 30j avant anniversaire</li>
+                      <li><strong>Taxe foncière</strong> : 10j avant paiement</li>
+                    </ul>
+                  </>
+                }
+              />
               <Badge variant="destructive">{alertesConformite.length}</Badge>
             </div>
             <CardDescription>Action requise à court terme</CardDescription>

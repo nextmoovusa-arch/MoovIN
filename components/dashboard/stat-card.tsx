@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkline } from "@/components/charts/chart-kit";
+import { InfoHint } from "@/components/ui/info-hint";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ export function StatCard({
   trend,
   sparkData,
   color = "primary",
+  info,
 }: {
   label: string;
   value: string;
@@ -20,6 +22,7 @@ export function StatCard({
   trend?: "up" | "down";
   sparkData?: number[];
   color?: "primary" | "success" | "warning" | "destructive";
+  info?: { title?: string; content: React.ReactNode };
 }) {
   const colorVar =
     color === "success"
@@ -33,7 +36,12 @@ export function StatCard({
   return (
     <Card className="overflow-hidden animate-fade-in hover:shadow-md transition-shadow">
       <CardContent className="p-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+          {info && (
+            <InfoHint title={info.title ?? label}>{info.content}</InfoHint>
+          )}
+        </div>
         <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">{value}</p>
         {delta && (
           <div

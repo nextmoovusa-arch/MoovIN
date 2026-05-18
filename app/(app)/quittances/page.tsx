@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GroupedBarChart, LineAreaChart } from "@/components/charts/chart-kit";
+import { CardTitleInfo } from "@/components/ui/card-title-info";
 import { Button } from "@/components/ui/button";
 import { Download, Send } from "lucide-react";
 
@@ -47,7 +48,16 @@ export default function QuittancesPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Statut d'envoi des quittances</CardTitle>
+            <CardTitleInfo
+              title="Statut d'envoi des quittances"
+              hint={
+                <>
+                  <p><strong>Type :</strong> barres groupées par mois.</p>
+                  <p className="mt-1">4 étapes : générée → envoyée → lue (ouverture email) → téléchargée par le locataire.</p>
+                  <p className="mt-1">L'écart entre envoyé et lu = relances à prévoir.</p>
+                </>
+              }
+            />
             <CardDescription>Générées, envoyées, lues, téléchargées</CardDescription>
           </CardHeader>
           <CardContent>
@@ -66,7 +76,15 @@ export default function QuittancesPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Cumul annuel des loyers quittancés</CardTitle>
+            <CardTitleInfo
+              title="Cumul annuel des loyers quittancés"
+              hint={
+                <>
+                  <p><strong>Type :</strong> aire cumulative.</p>
+                  <p className="mt-1">Total des loyers quittancés depuis janvier. À reporter sur la déclaration de revenus fonciers.</p>
+                </>
+              }
+            />
             <CardDescription>Pour déclaration fiscale</CardDescription>
           </CardHeader>
           <CardContent>

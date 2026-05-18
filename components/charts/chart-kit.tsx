@@ -37,14 +37,28 @@ import { cn } from "@/lib/utils";
 export const chartPalette = (n: number) =>
   Array.from({ length: n }, (_, i) => `hsl(var(--chart-${(i % 10) + 1}))`);
 
+/**
+ * Tooltips Recharts — fond clair + texte sombre dans les deux modes
+ * pour garantir la lisibilité (sinon en mode sombre, la couleur de la série
+ * écrase le texte sur un fond foncé → illisible).
+ */
 const tooltipStyle = {
-  backgroundColor: "hsl(var(--popover))",
-  border: "1px solid hsl(var(--border))",
+  backgroundColor: "#FFFFFF",
+  border: "1px solid #E2E8F0",
   borderRadius: 8,
-  color: "hsl(var(--popover-foreground))",
+  color: "#0F172A",
   fontSize: 13,
   padding: "8px 12px",
-  boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+  boxShadow: "0 6px 18px rgba(0,0,0,0.18)",
+};
+const tooltipItemStyle = { color: "#0F172A" };
+const tooltipLabelStyle = { color: "#0F172A", fontWeight: 600, marginBottom: 4 };
+
+/** Props standard à appliquer à chaque <Tooltip> Recharts. */
+const tooltipProps = {
+  contentStyle: tooltipStyle,
+  itemStyle: tooltipItemStyle,
+  labelStyle: tooltipLabelStyle,
 };
 
 const axisStyle = { fill: "hsl(var(--muted-foreground))", fontSize: 12 };
@@ -92,12 +106,14 @@ export function LineAreaChart({
   xKey,
   height = 320,
   showZeroLine = false,
+  referenceLine,
 }: {
   data: any[];
   dataKey: string;
   xKey: string;
   height?: number;
   showZeroLine?: boolean;
+  referenceLine?: { xValue: string | number; label?: string };
 }) {
   return (
     <ChartContainer height={height}>
@@ -112,7 +128,26 @@ export function LineAreaChart({
         <XAxis dataKey={xKey} tick={axisStyle} axisLine={false} tickLine={false} />
         <YAxis tick={axisStyle} axisLine={false} tickLine={false} width={60} />
         {showZeroLine && <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />}
-        <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "hsl(var(--muted))" }} />
+        {referenceLine && (
+          <ReferenceLine
+            x={referenceLine.xValue}
+            stroke="hsl(var(--success))"
+            strokeDasharray="4 4"
+            strokeWidth={2}
+            label={
+              referenceLine.label
+                ? {
+                    value: referenceLine.label,
+                    position: "top",
+                    fill: "hsl(var(--success))",
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }
+                : undefined
+            }
+          />
+        )}
+        <Tooltip {...tooltipProps} cursor={{ fill: "hsl(var(--muted))" }} />
         <Area
           type="monotone"
           dataKey={dataKey}
@@ -159,7 +194,7 @@ export function DonutChart({
         {showLegend && (
           <Legend wrapperStyle={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }} />
         )}
-        <Tooltip contentStyle={tooltipStyle} />
+        <Tooltip {...tooltipProps} />
       </PieChart>
     </ChartContainer>
   );
@@ -184,7 +219,7 @@ export function GroupedBarChart({
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
         <XAxis dataKey={xKey} tick={axisStyle} axisLine={false} tickLine={false} />
         <YAxis tick={axisStyle} axisLine={false} tickLine={false} width={60} />
-        <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "hsl(var(--muted))" }} />
+        <Tooltip {...tooltipProps} cursor={{ fill: "hsl(var(--muted))" }} />
         <Legend wrapperStyle={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }} />
         {series.map((s, i) => (
           <Bar
@@ -339,7 +374,7 @@ export function RadarMini({ data, height = 260 }: { data: { axis: string; value:
           fillOpacity={0.25}
           animationDuration={600}
         />
-        <Tooltip contentStyle={tooltipStyle} />
+        <Tooltip {...tooltipProps} />
       </RadarChart>
     </ChartContainer>
   );
@@ -364,7 +399,7 @@ export function SimpleLineChart({
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
         <XAxis dataKey={xKey} tick={axisStyle} axisLine={false} tickLine={false} />
         <YAxis tick={axisStyle} axisLine={false} tickLine={false} width={60} />
-        <Tooltip contentStyle={tooltipStyle} />
+        <Tooltip {...tooltipProps} />
         <Legend wrapperStyle={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }} />
         {series.map((s, i) => (
           <Line
@@ -402,7 +437,7 @@ export function StackedAreaChart({
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
         <XAxis dataKey={xKey} tick={axisStyle} axisLine={false} tickLine={false} />
         <YAxis tick={axisStyle} axisLine={false} tickLine={false} width={60} />
-        <Tooltip contentStyle={tooltipStyle} />
+        <Tooltip {...tooltipProps} />
         <Legend wrapperStyle={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }} />
         {series.map((s, i) => (
           <Area
@@ -443,7 +478,7 @@ export function HorizontalBarChart({
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
         <XAxis type="number" tick={axisStyle} axisLine={false} tickLine={false} />
         <YAxis dataKey={yKey} type="category" tick={axisStyle} axisLine={false} tickLine={false} width={100} />
-        <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "hsl(var(--muted))" }} />
+        <Tooltip {...tooltipProps} cursor={{ fill: "hsl(var(--muted))" }} />
         <Bar dataKey={xKey} fill={color} radius={[0, 4, 4, 0]} animationDuration={600} />
       </BarChart>
     </ChartContainer>

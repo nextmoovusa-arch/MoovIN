@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Mode clair (Module 14) */
+    --background: 0 0% 100%;            /* #FFFFFF */
+    --foreground: 222 47% 11%;          /* #0F172A text-primary */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --elevated: 210 40% 98%;            /* #F8FAFC */
+    --muted: 210 40% 96%;               /* #F1F5F9 */
+    --muted-foreground: 215 16% 47%;    /* #64748B text-secondary */
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --border: 214 32% 91%;              /* #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;                /* #3B82F6 */
+
+    --primary: 217 91% 60%;             /* bleu primaire */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;           /* rouge */
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 84% 39%;             /* vert */
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;              /* orange */
+    --warning-foreground: 0 0% 100%;
+
+    /* Palette catégorielle ChartKit — 10 couleurs accessibles */
+    --chart-1: 217 91% 60%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 271 81% 56%;
+    --chart-5: 0 84% 60%;
+    --chart-6: 199 89% 48%;
+    --chart-7: 142 71% 45%;
+    --chart-8: 24 95% 53%;
+    --chart-9: 330 81% 60%;
+    --chart-10: 188 86% 43%;
+
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    /* Mode sombre (Module 14) — gris très sombre bleuté style GitHub/Linear/Notion */
+    --background: 222 47% 7%;           /* #0B1220 base */
+    --foreground: 210 40% 98%;          /* #F8FAFC */
+    --card: 222 47% 9%;                 /* #111827 surface */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --elevated: 215 28% 17%;            /* #1F2937 */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;    /* #94A3B8 */
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --border: 215 28% 17%;              /* #1F2937 */
+    --input: 215 28% 17%;
+    --ring: 217 91% 65%;
+
+    --primary: 217 91% 65%;
+    --primary-foreground: 222 47% 7%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 72% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 70% 50%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 58%;
+    --warning-foreground: 0 0% 100%;
+
+    --chart-1: 217 91% 65%;
+    --chart-2: 160 70% 50%;
+    --chart-3: 38 92% 58%;
+    --chart-4: 271 76% 68%;
+    --chart-5: 0 72% 65%;
+    --chart-6: 199 89% 60%;
+    --chart-7: 142 60% 55%;
+    --chart-8: 24 90% 60%;
+    --chart-9: 330 75% 68%;
+    --chart-10: 188 80% 55%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  /* prefers-reduced-motion (Module 18.5.4) */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(12px);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--chart-4)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

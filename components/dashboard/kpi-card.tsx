@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
+import { CountUp } from "@/components/ui/count-up";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
 
@@ -19,6 +20,8 @@ const accentMap: Record<Accent, { soft: string; text: string; bar: string }> = {
 export function KpiCard({
   label,
   value,
+  animateValue,
+  format,
   icon: Icon,
   accent = "primary",
   delta,
@@ -26,7 +29,12 @@ export function KpiCard({
   hint,
 }: {
   label: string;
-  value: string;
+  /** Valeur statique (si pas d'animation). */
+  value?: string;
+  /** Valeur numérique animée au montage (count-up). */
+  animateValue?: number;
+  /** Formateur appliqué à la valeur animée. */
+  format?: (n: number) => string;
   icon: React.ComponentType<{ className?: string }>;
   accent?: Accent;
   delta?: string;
@@ -43,7 +51,13 @@ export function KpiCard({
           <Icon className={cn("h-4 w-4", a.text)} />
         </div>
       </div>
-      <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums md:text-4xl">{value}</p>
+      <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums md:text-4xl">
+        {animateValue !== undefined && format ? (
+          <CountUp value={animateValue} format={format} />
+        ) : (
+          value
+        )}
+      </p>
       <div className="mt-1.5 flex items-center gap-2">
         {delta && (
           <span

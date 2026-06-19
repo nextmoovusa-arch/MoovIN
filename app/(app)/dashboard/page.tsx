@@ -88,28 +88,32 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <KpiCard
           label="Valeur du patrimoine"
-          value={formatEUR(valeur)}
+          animateValue={valeur}
+          format={(n) => formatEUR(n)}
           icon={Building2}
           accent="primary"
           hint={`${biens.length} bien${biens.length > 1 ? "s" : ""}`}
         />
         <KpiCard
           label="Loyers du mois"
-          value={formatEUR(loyersMois)}
+          animateValue={loyersMois}
+          format={(n) => formatEUR(n)}
           icon={Euro}
           accent="success"
           hint={`${nbOccupes} loué${nbOccupes > 1 ? "s" : ""}`}
         />
         <KpiCard
           label="Rendement net moyen"
-          value={formatPct(rendementNet)}
+          animateValue={rendementNet}
+          format={(n) => formatPct(n)}
           icon={Percent}
           accent="violet"
           hint="après charges"
         />
         <KpiCard
           label="Taux d'occupation"
-          value={`${Math.round(occupation)} %`}
+          animateValue={occupation}
+          format={(n) => `${Math.round(n)} %`}
           icon={Home}
           accent={occupation >= 90 ? "success" : occupation >= 70 ? "warning" : "primary"}
           hint={`${nbOccupes}/${biens.length} occupés`}

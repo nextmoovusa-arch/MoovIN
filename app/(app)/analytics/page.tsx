@@ -1,116 +1,104 @@
+"use client";
+
 import { PageHeader } from "@/components/layout/page-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  LineAreaChart,
-  DonutChart,
-  GroupedBarChart,
-  RadarMini,
-  PaymentHeatmap,
-  StackedAreaChart,
-} from "@/components/charts/chart-kit";
-import { cashFlowMensuel, repartitionPatrimoine, repartitionCharges, heatmapPaiements } from "@/lib/mock-data";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { DonutChart, GroupedBarChart, PaymentHeatmap } from "@/components/charts/chart-kit";
 import { CardTitleInfo } from "@/components/ui/card-title-info";
-
-const cumulCash = cashFlowMensuel.map((m, i) => ({
-  ...m,
-  cumul: cashFlowMensuel.slice(0, i + 1).reduce((s, x) => s + x.cashFlow, 0),
-}));
-
-const radar = [
-  { axis: "Rendement", value: 75 },
-  { axis: "Occupation", value: 92 },
-  { axis: "Recouvrement", value: 96 },
-  { axis: "Conformité", value: 84 },
-  { axis: "Diversification", value: 65 },
-];
-
-const ventilationMensuel = Array.from({ length: 12 }, (_, i) => {
-  const d = new Date();
-  d.setMonth(d.getMonth() - (11 - i));
-  return {
-    mois: d.toLocaleDateString("fr-FR", { month: "short" }),
-    revenus: 5350,
-    charges: -1850,
-    pret: -2400,
-  };
-});
+import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
+import { useBiens, useLocataires } from "@/lib/store";
+import {
+  repartitionPatrimoine,
+  repartitionCharges,
+  repartitionParType,
+  dpePatrimoine,
+  heatmapPaiements,
+} from "@/lib/derived";
+import { Building2 } from "lucide-react";
+import Link from "next/link";
 
 export default function AnalyticsPage() {
+  const [biens] = useBiens();
+  const [locataires] = useLocataires();
+
+  const patrimoine = repartitionPatrimoine(biens).map((p) => ({ name: p.name, value: p.value }));
+  const charges = repartitionCharges(biens);
+  const parType = repartitionParType(biens);
+  const dpe = dpePatrimoine(biens);
+
+  if (biens.length === 0) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Analytics" description="Centre transverse de visualisation — agrégation, drill-down, exports." badge="Module 13" />
+        <Card>
+          <CardContent className="py-4">
+            <EmptyState
+              icon={Building2}
+              title="Aucune donnée à analyser"
+              message="Les analyses se construisent à partir de vos biens et locataires réels."
+              action={
+                <Button asChild>
+                  <Link href="/biens">Ajouter un bien</Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Analytics"
-        description="Centre transverse de visualisation — agrégation, drill-down, exports."
-        badge="Module 13"
-      />
+      <PageHeader title="Analytics" description="Centre transverse de visualisation — agrégation, drill-down, exports." badge="Module 13" />
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitleInfo title="Patrimoine" hint="Donut : poids de chaque bien dans la valeur totale du portefeuille." />
+            <CardTitleInfo title="Patrimoine" hint="Donut : poids de chaque bien dans la valeur totale." />
             <CardDescription>Répartition par bien</CardDescription>
           </CardHeader>
           <CardContent>
-            <DonutChart data={repartitionPatrimoine.map((p) => ({ name: p.name, value: p.value }))} />
+            <DonutChart data={patrimoine} />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitleInfo title="Charges" hint="Donut : décomposition de toutes les charges annuelles cumulées sur le portefeuille." />
+            <CardTitleInfo title="Charges" hint="Donut des charges annuelles réelles (taxe foncière + charges courantes)." />
             <CardDescription>Décomposition annuelle</CardDescription>
           </CardHeader>
           <CardContent>
-            <DonutChart data={repartitionCharges} />
+            {charges.length > 0 ? (
+              <DonutChart data={charges} />
+            ) : (
+              <EmptyState compact message="Renseignez les charges de vos biens." />
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitleInfo
-              title="Indicateurs santé"
-              hint="Radar 5 axes (rendement, occupation, recouvrement, conformité, diversification). Plus la surface est grande, plus le portefeuille est sain."
-            />
-            <CardDescription>Radar synthétique</CardDescription>
+            <CardTitleInfo title="Répartition par type" hint="Nombre de biens par typologie (Studio, T1, T2…)." />
+            <CardDescription>Typologie du portefeuille</CardDescription>
           </CardHeader>
           <CardContent>
-            <RadarMini data={radar} />
+            <DonutChart data={parType} />
           </CardContent>
         </Card>
       </section>
-
-      <Card>
-        <CardHeader>
-          <CardTitleInfo
-            title="Cash-flow cumulé"
-            hint="Somme cumulative des cash-flows mensuels depuis 24 mois. La courbe monte = vous accumulez du cash net ; elle descend = vous puisez dans vos économies."
-          />
-          <CardDescription>Évolution depuis 24 mois</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <LineAreaChart data={cumulCash} dataKey="cumul" xKey="mois" />
-        </CardContent>
-      </Card>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitleInfo
-              title="Ventilation mensuelle"
-              hint="Pour chaque mois : revenus (positifs), charges et mensualité de prêt (négatives). La barre nette = cash-flow réel du mois."
+              title="Classes DPE du patrimoine"
+              hint="Nombre de biens par classe énergétique. Rappel : G interdit 2025, F 2028, E 2034."
             />
-            <CardDescription>Revenus, charges, remboursement prêt</CardDescription>
+            <CardDescription>Performance énergétique</CardDescription>
           </CardHeader>
           <CardContent>
-            <GroupedBarChart
-              data={ventilationMensuel}
-              xKey="mois"
-              series={[
-                { dataKey: "revenus", name: "Revenus", color: "hsl(var(--success))" },
-                { dataKey: "charges", name: "Charges", color: "hsl(var(--warning))" },
-                { dataKey: "pret", name: "Prêt", color: "hsl(var(--destructive))" },
-              ]}
-            />
+            <GroupedBarChart data={dpe} xKey="classe" series={[{ dataKey: "nb", name: "Biens" }]} />
           </CardContent>
         </Card>
 
@@ -118,20 +106,29 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitleInfo
               title="Heatmap paiements"
-              hint={
-                <>
-                  <p>Vue annuelle agrégée (12 mois × biens).</p>
-                  <p className="mt-1">Vert = payé à temps, orange = retard, rouge = impayé.</p>
-                </>
-              }
+              hint="Vue annuelle des encaissements réels enregistrés via le portail locataire."
             />
             <CardDescription>Vue agrégée annuelle</CardDescription>
           </CardHeader>
           <CardContent>
-            <PaymentHeatmap rows={heatmapPaiements} />
+            <PaymentHeatmap rows={heatmapPaiements(biens, locataires, readPaiements(locataires))} />
           </CardContent>
         </Card>
       </section>
     </div>
   );
+}
+
+function readPaiements(locataires: { id: string }[]): Record<string, { mois: string }[]> {
+  const out: Record<string, { mois: string }[]> = {};
+  if (typeof window === "undefined") return out;
+  for (const l of locataires) {
+    try {
+      const raw = window.localStorage.getItem(`moovin.paiements.${l.id}`);
+      out[l.id] = raw ? JSON.parse(raw) : [];
+    } catch {
+      out[l.id] = [];
+    }
+  }
+  return out;
 }

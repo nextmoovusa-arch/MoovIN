@@ -13,6 +13,50 @@ import { InfoHint } from "@/components/ui/info-hint";
 import { mensualitePret, tableauAmortissement } from "@/lib/calculs";
 import { formatEUR } from "@/lib/utils";
 
+function Field({
+  label,
+  value,
+  onChange,
+  suffix,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+  suffix: string;
+  step?: number;
+}) {
+  const [text, setText] = React.useState(value === 0 ? "" : String(value));
+  React.useEffect(() => {
+    const current = text === "" ? 0 : Number(text.replace(",", "."));
+    if (value !== current) setText(value === 0 ? "" : String(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  function handle(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value;
+    if (raw === "" || /^-?\d*([.,]\d*)?$/.test(raw)) {
+      setText(raw);
+      onChange(raw === "" || raw === "-" || raw === "." || raw === "," ? 0 : Number(raw.replace(",", ".")));
+    }
+  }
+
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <div className="flex items-center rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring">
+        <input
+          type="text"
+          inputMode="decimal"
+          value={text}
+          onChange={handle}
+          className="flex-1 bg-transparent px-3 py-2 text-sm outline-none"
+        />
+        <span className="px-3 py-2 text-sm text-muted-foreground border-l">{suffix}</span>
+      </div>
+    </label>
+  );
+}
+
 export default function PretPage() {
   const [capital, setCapital] = React.useState(180000);
   const [taux, setTaux] = React.useState(3.5);
@@ -42,36 +86,6 @@ export default function PretPage() {
     { name: "Intérêts", value: Math.round(interetsTotal) },
     { name: "Assurance", value: Math.round(assuranceTotal) },
   ];
-
-  function Field({
-    label,
-    value,
-    onChange,
-    suffix,
-    step,
-  }: {
-    label: string;
-    value: number;
-    onChange: (n: number) => void;
-    suffix: string;
-    step: number;
-  }) {
-    return (
-      <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
-        <div className="flex items-center rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring">
-          <input
-            type="number"
-            value={value}
-            step={step}
-            onChange={(e) => onChange(Number(e.target.value))}
-            className="flex-1 bg-transparent px-3 py-2 text-sm outline-none"
-          />
-          <span className="px-3 py-2 text-sm text-muted-foreground border-l">{suffix}</span>
-        </div>
-      </label>
-    );
-  }
 
   return (
     <div className="space-y-6">

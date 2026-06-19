@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useLocalStorage } from "@/lib/storage";
-import { biens as biensSeed, locataires as locatairesSeed } from "@/lib/mock-data";
 
 /* -------- Types -------- */
 
@@ -39,51 +38,17 @@ export type LocataireStored = {
   scoreFiabilite: number;
 };
 
-/* -------- Bootstrap depuis les mocks (1ʳᵉ visite) -------- */
-
-const seedBiens = (): BienStored[] =>
-  biensSeed.map((b) => ({
-    id: b.id,
-    adresse: b.adresse,
-    ville: b.ville,
-    type: b.type,
-    nbPieces: parseInt(b.type.replace(/[^0-9]/g, "")) || 1,
-    surface: b.surface,
-    dpe: b.dpe,
-    prixAchat: b.prixAchat,
-    taxeFonciere: b.taxeFonciere,
-    charges: b.charges,
-    photos: [],
-    enTravaux: b.etat === "Travaux",
-    lat: b.lat,
-    lng: b.lng,
-  }));
-
-const seedLocataires = (): LocataireStored[] =>
-  locatairesSeed.map((l) => {
-    const bien = biensSeed.find((b) => b.id === l.bienId);
-    return {
-      id: l.id,
-      nom: l.nom,
-      email: l.email,
-      telephone: l.telephone,
-      bienId: l.bienId,
-      dateEntree: l.dateEntree,
-      dureeBailAnnees: 3,
-      loyerMensuel: bien?.loyerMensuel ?? 0,
-      depotGarantie: (bien?.loyerMensuel ?? 0) * 2,
-      scoreFiabilite: l.scoreFiabilite,
-    };
-  });
-
 /* -------- Hooks publics -------- */
+/* Le portefeuille démarre VIDE — aucune donnée fictive. L'utilisateur
+   saisit ses propres biens et locataires. Clés versionnées (.v2) pour
+   ignorer définitivement les anciennes données de démonstration. */
 
 export function useBiens() {
-  return useLocalStorage<BienStored[]>("moovin.biens", seedBiens());
+  return useLocalStorage<BienStored[]>("moovin.biens.v2", []);
 }
 
 export function useLocataires() {
-  return useLocalStorage<LocataireStored[]>("moovin.locataires", seedLocataires());
+  return useLocalStorage<LocataireStored[]>("moovin.locataires.v2", []);
 }
 
 /* -------- Helpers dérivés -------- */
@@ -141,5 +106,170 @@ export function fileToDataURL(file: File): Promise<string> {
     r.onload = () => resolve(r.result as string);
     r.onerror = reject;
     r.readAsDataURL(file);
+  });
+}
+
+/* ============================================================
+   Documents — Module 6 (dépôt + catégorie + rattachement)
+   ============================================================ */
+
+export const DOC_CATEGORIES = [
+  "Bail",
+  "État des lieux",
+  "Diagnostic / DPE",
+  "Quittance",
+  "Assurance PNO",
+  "Facture / travaux",
+  "Acte d'achat",
+  "Taxe foncière",
+  "Pièce d'identité",
+  "Justificatif de revenus",
+  "Autre",
+] as const;
+export type DocCategorie = (typeof DOC_CATEGORIES)[number];
+
+export type DocumentStored = {
+  id: string;
+  nom: string;
+  categorie: DocCategorie;
+  dataUrl: string; // contenu encodé
+  mime: string;
+  taille: number; // octets
+  dateAjout: string;
+  bienId?: string | null;
+  locataireId?: string | null;
+};
+
+export function useDocuments() {
+  return useLocalStorage<DocumentStored[]>("moovin.documents.v1", []);
+}
+
+/* ============================================================
+   Prospection — biens repérés (annonces) à analyser
+   ============================================================ */
+
+export type ProspectStored = {
+  id: string;
+  titre: string;
+  typeBien: string; // Appartement, Maison, Studio…
+  ville: string;
+  codePostal?: string;
+  prix?: number;
+  surface?: number;
+  nbPieces?: number;
+  dpe?: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "NC";
+  loyerEstime?: number;
+  lienAnnonce?: string;
+  statut: "À étudier" | "Visite prévue" | "Offre faite" | "Écarté" | "Acheté";
+  notes?: string;
+  photos: string[];
+  dateAjout: string;
+};
+
+export function useProspects() {
+  return useLocalStorage<ProspectStored[]>("moovin.prospects.v1", []);
+}
+
+/** Prix au m² d'un prospect. */
+export function prixM2Prospect(p: ProspectStored): number | null {
+  if (!p.prix || !p.surface) return null;
+  return p.prix / p.surface;
+}
+
+/* ============================================================
+   Marché par ville — saisie libre de données de marché
+   ============================================================ */
+
+export type VilleStored = {
+  id: string;
+  nom: string;
+  codePostal?: string;
+  prixM2Bas?: number;
+  prixM2Moyen?: number;
+  prixM2Haut?: number;
+  loyerM2Moyen?: number;
+  rendementMoyen?: number;
+  tensionLocative?: "Faible" | "Moyenne" | "Forte";
+  notes?: string;
+  dateMaj: string;
+};
+
+export function useVilles() {
+  return useLocalStorage<VilleStored[]>("moovin.villes.v1", []);
+}
+
+/* ============================================================
+   Rapprochement bancaire — détecter la réception des loyers
+   ============================================================ */
+
+export type BankConnection = {
+  connected: boolean;
+  banque?: string;
+  iban?: string;
+  dateConnexion?: string;
+};
+
+export type BankTransaction = {
+  id: string;
+  date: string; // ISO
+  libelle: string; // émetteur / motif du virement
+  montant: number; // positif = crédit reçu
+};
+
+export function useBankConnection() {
+  return useLocalStorage<BankConnection>("moovin.bank.connection.v1", { connected: false });
+}
+
+export function useBankTransactions() {
+  return useLocalStorage<BankTransaction[]>("moovin.bank.transactions.v1", []);
+}
+
+/** Normalise un texte pour comparaison (minuscules, sans accents/espaces superflus). */
+export function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export type RapprochementResultat = {
+  locataire: LocataireStored;
+  attendu: number;
+  transaction?: BankTransaction;
+  statut: "recu" | "montant-incorrect" | "manquant";
+};
+
+/**
+ * Rapproche les loyers attendus avec les virements reçus.
+ * - "recu" : un virement du bon émetteur ET du bon montant existe
+ * - "montant-incorrect" : un virement du bon émetteur mais montant ≠
+ * - "manquant" : aucun virement identifiable
+ */
+export function rapprocherLoyers(
+  locataires: LocataireStored[],
+  transactions: BankTransaction[],
+  toleranceEuros = 1,
+): RapprochementResultat[] {
+  return locataires.map((l) => {
+    const nom = normalize(l.nom);
+    // Cherche les virements dont le libellé contient le nom du locataire
+    const candidats = transactions.filter(
+      (t) => t.montant > 0 && normalize(t.libelle).includes(nom),
+    );
+    const exact = candidats.find((t) => Math.abs(t.montant - l.loyerMensuel) <= toleranceEuros);
+    if (exact) {
+      return { locataire: l, attendu: l.loyerMensuel, transaction: exact, statut: "recu" };
+    }
+    if (candidats.length > 0) {
+      return {
+        locataire: l,
+        attendu: l.loyerMensuel,
+        transaction: candidats[0],
+        statut: "montant-incorrect",
+      };
+    }
+    return { locataire: l, attendu: l.loyerMensuel, statut: "manquant" };
   });
 }

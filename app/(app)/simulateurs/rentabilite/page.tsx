@@ -46,7 +46,6 @@ function NumField({
   label,
   value,
   onChange,
-  step = 100,
   suffix = "€",
   hint,
 }: {
@@ -57,6 +56,22 @@ function NumField({
   suffix?: string;
   hint?: React.ReactNode;
 }) {
+  // État local en chaîne : permet d'effacer le 0 et de saisir librement
+  const [text, setText] = React.useState(value === 0 ? "" : String(value));
+  React.useEffect(() => {
+    const current = text === "" ? 0 : Number(text.replace(",", "."));
+    if (value !== current) setText(value === 0 ? "" : String(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  function handle(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value;
+    if (raw === "" || /^-?\d*([.,]\d*)?$/.test(raw)) {
+      setText(raw);
+      onChange(raw === "" || raw === "-" || raw === "." || raw === "," ? 0 : Number(raw.replace(",", ".")));
+    }
+  }
+
   return (
     <label className="flex flex-col gap-1.5">
       <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -65,10 +80,10 @@ function NumField({
       </span>
       <div className="flex items-center rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring">
         <input
-          type="number"
-          value={value}
-          step={step}
-          onChange={(e) => onChange(Number(e.target.value))}
+          type="text"
+          inputMode="decimal"
+          value={text}
+          onChange={handle}
           className="flex-1 bg-transparent px-3 py-2 text-sm outline-none"
         />
         <span className="px-3 py-2 text-sm text-muted-foreground border-l">{suffix}</span>

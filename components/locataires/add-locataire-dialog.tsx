@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, NumberInput } from "@/components/ui/input";
 import { InfoHint } from "@/components/ui/info-hint";
 import { BienStored, LocataireStored, newId } from "@/lib/store";
 
@@ -117,23 +117,20 @@ export function AddLocataireDialog({
           </div>
           <div>
             <Label>Loyer mensuel (€)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              step={10}
-              value={l.loyerMensuel ?? ""}
-              onChange={(e) => setL((s) => ({ ...s, loyerMensuel: Number(e.target.value) }))}
+              placeholder="Ex : 850"
+              value={l.loyerMensuel}
+              onValueChange={(v) => setL((s) => ({ ...s, loyerMensuel: v }))}
             />
           </div>
           <div>
             <Label>Dépôt de garantie (€)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              step={50}
-              placeholder={l.loyerMensuel ? String(l.loyerMensuel * 2) : ""}
-              value={l.depotGarantie ?? ""}
-              onChange={(e) => setL((s) => ({ ...s, depotGarantie: Number(e.target.value) }))}
+              placeholder={l.loyerMensuel ? String(l.loyerMensuel * 2) : "Ex : 1700"}
+              value={l.depotGarantie}
+              onValueChange={(v) => setL((s) => ({ ...s, depotGarantie: v }))}
             />
           </div>
           <div>
@@ -147,13 +144,11 @@ export function AddLocataireDialog({
           </div>
           <div>
             <Label>Durée du bail (ans)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              min={1}
-              max={9}
-              value={l.dureeBailAnnees ?? 3}
-              onChange={(e) => setL((s) => ({ ...s, dureeBailAnnees: Number(e.target.value) }))}
+              placeholder="Ex : 3"
+              value={l.dureeBailAnnees}
+              onValueChange={(v) => setL((s) => ({ ...s, dureeBailAnnees: v }))}
             />
           </div>
         </div>

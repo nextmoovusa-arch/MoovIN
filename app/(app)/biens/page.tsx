@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DonutChart, Sparkline, GroupedBarChart } from "@/components/charts/chart-kit";
+import { DonutChart, GroupedBarChart } from "@/components/charts/chart-kit";
 import { CardTitleInfo } from "@/components/ui/card-title-info";
 import { AddBienDialog } from "@/components/biens/add-bien-dialog";
+import { AnnonceDialog } from "@/components/biens/annonce-dialog";
 import {
   useBiens,
   useLocataires,
@@ -22,7 +23,8 @@ import {
   BienStored,
 } from "@/lib/store";
 import { formatEUR, formatPct } from "@/lib/utils";
-import { Building2, Trash2 } from "lucide-react";
+import { Building2, Trash2, Megaphone, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const dpeColors: Record<string, string> = {
   A: "bg-emerald-500", B: "bg-green-500", C: "bg-lime-500",
@@ -138,8 +140,7 @@ export default function BiensPage() {
                   <th className="py-2 pr-3 font-medium">Loyer <span className="text-[10px] uppercase">auto</span></th>
                   <th className="py-2 pr-3 font-medium">Rendement net <span className="text-[10px] uppercase">auto</span></th>
                   <th className="py-2 pr-3 font-medium">État <span className="text-[10px] uppercase">auto</span></th>
-                  <th className="py-2 pr-3 font-medium hidden lg:table-cell">Évol. loyer</th>
-                  <th className="py-2 pr-3 font-medium" aria-label="Actions" />
+                  <th className="py-2 pr-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -147,9 +148,6 @@ export default function BiensPage() {
                   const loyer = loyerActifDuBien(b, locataires);
                   const rendNet = rendementNetDuBien(b, locataires);
                   const etat = etatDuBien(b, locataires);
-                  const trend = Array.from({ length: 12 }, () =>
-                    loyer > 0 ? loyer * (0.95 + Math.random() * 0.1) : 0,
-                  );
                   const rendBadge =
                     rendNet <= 0 ? "secondary" : rendNet < 2 ? "destructive" : rendNet < 4 ? "warning" : "success";
                   const etatBadge =
@@ -158,7 +156,7 @@ export default function BiensPage() {
                   return (
                     <tr key={b.id} className="border-b hover:bg-muted/40 transition-colors">
                       <td className="py-3 pr-3">
-                        <div className="flex items-start gap-2">
+                        <Link href={`/biens/${b.id}`} className="flex items-start gap-2 group">
                           {b.photos[0] ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -172,12 +170,14 @@ export default function BiensPage() {
                             </div>
                           )}
                           <div>
-                            <p className="font-medium text-foreground">{b.adresse}</p>
+                            <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                              {b.adresse}
+                            </p>
                             <p className="text-xs text-muted-foreground">
                               {b.ville} {b.codePostal ? `· ${b.codePostal}` : ""}
                             </p>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="py-3 pr-3 text-muted-foreground">
                         {b.type} <span className="text-xs">({b.nbPieces}p)</span>
@@ -203,23 +203,32 @@ export default function BiensPage() {
                       <td className="py-3 pr-3">
                         <Badge variant={etatBadge as any}>{etat}</Badge>
                       </td>
-                      <td className="py-3 pr-3 hidden lg:table-cell w-40">
-                        {loyer > 0 ? (
-                          <Sparkline data={trend} />
-                        ) : (
-                          <span className="text-xs text-muted-foreground italic">—</span>
-                        )}
-                      </td>
                       <td className="py-3 pr-3">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Supprimer ce bien"
-                          onClick={() => removeBien(b.id)}
-                          className="text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <AnnonceDialog
+                            bien={b}
+                            loyerInitial={loyer || undefined}
+                            trigger={
+                              <Button variant="ghost" size="icon" aria-label="Créer une annonce" title="Créer une annonce">
+                                <Megaphone className="h-4 w-4" />
+                              </Button>
+                            }
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Supprimer ce bien"
+                            onClick={() => removeBien(b.id)}
+                            className="text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                          <Button asChild variant="ghost" size="icon" aria-label="Voir le détail" title="Voir le détail">
+                            <Link href={`/biens/${b.id}`}>
+                              <ChevronRight className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );

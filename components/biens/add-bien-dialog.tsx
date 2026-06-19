@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input, Textarea, Label } from "@/components/ui/input";
+import { Input, Textarea, Label, NumberInput } from "@/components/ui/input";
 import { InfoHint } from "@/components/ui/info-hint";
 import { BienStored, fileToDataURL, newId } from "@/lib/store";
 import { formatEUR } from "@/lib/utils";
@@ -75,13 +75,6 @@ export function AddBienDialog({
     reset();
     setOpen(false);
   }
-
-  const rendementSimule =
-    b.prixAchat && b.prixAchat > 0
-      ? ((b.charges ?? 0) === 0
-          ? null
-          : null)
-      : null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -186,23 +179,20 @@ export function AddBienDialog({
               <Label>Nombre de pièces</Label>
               <InfoHint title="Nb de pièces">Pièces principales (hors cuisine, SDB, WC).</InfoHint>
             </div>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              min={1}
-              max={20}
-              value={b.nbPieces ?? 1}
-              onChange={(e) => setB((s) => ({ ...s, nbPieces: Number(e.target.value) }))}
+              placeholder="Ex : 3"
+              value={b.nbPieces}
+              onValueChange={(v) => setB((s) => ({ ...s, nbPieces: v }))}
             />
           </div>
           <div>
             <Label>Surface habitable (m²)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              min={1}
-              value={b.surface ?? ""}
-              onChange={(e) => setB((s) => ({ ...s, surface: Number(e.target.value) }))}
+              placeholder="Ex : 45"
+              value={b.surface}
+              onValueChange={(v) => setB((s) => ({ ...s, surface: v }))}
             />
           </div>
           <div>
@@ -227,12 +217,11 @@ export function AddBienDialog({
           {/* Financier */}
           <div>
             <Label>Prix d'achat (€)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              step={1000}
-              value={b.prixAchat ?? ""}
-              onChange={(e) => setB((s) => ({ ...s, prixAchat: Number(e.target.value) }))}
+              placeholder="Ex : 200000"
+              value={b.prixAchat}
+              onValueChange={(v) => setB((s) => ({ ...s, prixAchat: v }))}
             />
           </div>
           <div>
@@ -240,33 +229,29 @@ export function AddBienDialog({
               <Label>Frais de notaire (€)</Label>
               <InfoHint title="Frais de notaire">7-8 % du prix dans l'ancien, 2-3 % dans le neuf. Pré-rempli automatiquement.</InfoHint>
             </div>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              step={100}
-              placeholder={b.prixAchat ? String(Math.round(b.prixAchat * 0.08)) : "0"}
-              value={b.fraisNotaire ?? ""}
-              onChange={(e) => setB((s) => ({ ...s, fraisNotaire: Number(e.target.value) }))}
+              placeholder={b.prixAchat ? String(Math.round(b.prixAchat * 0.08)) : "Ex : 16000"}
+              value={b.fraisNotaire}
+              onValueChange={(v) => setB((s) => ({ ...s, fraisNotaire: v }))}
             />
           </div>
           <div>
             <Label>Taxe foncière (€/an)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              step={50}
-              value={b.taxeFonciere ?? ""}
-              onChange={(e) => setB((s) => ({ ...s, taxeFonciere: Number(e.target.value) }))}
+              placeholder="Ex : 1200"
+              value={b.taxeFonciere}
+              onValueChange={(v) => setB((s) => ({ ...s, taxeFonciere: v }))}
             />
           </div>
           <div>
             <Label>Charges mensuelles (€)</Label>
-            <Input
-              type="number"
+            <NumberInput
               className="mt-1.5"
-              step={10}
-              value={b.charges ?? ""}
-              onChange={(e) => setB((s) => ({ ...s, charges: Number(e.target.value) }))}
+              placeholder="Ex : 80"
+              value={b.charges}
+              onValueChange={(v) => setB((s) => ({ ...s, charges: v }))}
             />
           </div>
 

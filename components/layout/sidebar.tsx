@@ -23,6 +23,7 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/brand/logo";
 
 type NavChild = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
 type NavGroup = {
@@ -80,12 +81,9 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:flex h-screen w-64 flex-col border-r bg-card sticky top-0">
-      <div className="flex h-16 items-center gap-2 px-6 border-b">
-        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-chart-4 flex items-center justify-center">
-          <Building2 className="h-5 w-5 text-white" />
-        </div>
-        <Link href="/dashboard" className="text-xl font-bold text-gradient tracking-tight">
-          MoovIN
+      <div className="flex h-16 items-center px-5 border-b">
+        <Link href="/dashboard" aria-label="MoovIN — accueil">
+          <Logo markClassName="h-7 w-7" wordClassName="text-lg" />
         </Link>
       </div>
 

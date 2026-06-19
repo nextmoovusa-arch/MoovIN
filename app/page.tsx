@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Logo } from "@/components/brand/logo";
 import {
   ArrowRight,
-  Building2,
   ChartPieIcon,
   Shield,
   Sparkles,
@@ -28,12 +28,7 @@ export default function Landing() {
     <div className="min-h-screen bg-background">
       {/* Top bar */}
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 backdrop-blur px-4 lg:px-8">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-chart-4 flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-gradient">MoovIN</span>
-        </div>
+        <Logo />
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild>

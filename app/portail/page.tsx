@@ -10,7 +10,6 @@ import {
   CreditCard,
   Download,
   FileText,
-  Home,
   Image as ImageIcon,
   MessageCircle,
   Send,
@@ -31,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input, Textarea, Label } from "@/components/ui/input";
 import { InfoHint } from "@/components/ui/info-hint";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Logo } from "@/components/brand/logo";
 import { useBiens, useLocataires } from "@/lib/store";
 import { useLocalStorage } from "@/lib/storage";
 import { formatEUR } from "@/lib/utils";
@@ -74,13 +74,10 @@ function PortailContent() {
       {/* Header mobile-first */}
       <header className="mb-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-chart-4 flex items-center justify-center">
-            <Home className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-gradient leading-none">MoovIN</p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Portail locataire</p>
-          </div>
+          <Logo markClassName="h-7 w-7" wordClassName="text-base" />
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground border-l pl-2">
+            Portail locataire
+          </span>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />

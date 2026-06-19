@@ -57,7 +57,6 @@ const navGroups: NavGroup[] = [
       { href: "/loyers", label: "Suivi loyers", icon: Euro },
       { href: "/banque", label: "Rapprochement bancaire", icon: Landmark },
       { href: "/quittances", label: "Quittances", icon: Receipt },
-      { href: "/portail", label: "Portail locataire", icon: Users },
     ],
   },
   {
